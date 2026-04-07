@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
-from . import models, database
+from . import models, database, schemas
 
 # Création des tables dans la base de données au démarrage
 models.Base.metadata.create_all(bind=database.engine)
@@ -33,3 +33,24 @@ def get_trip_budget(trip_id: int, db: Session = Depends(get_db)):
             detail="Budget non trouvé pour ce voyage."
         )
     return budget
+
+# Route pour mettre à jour les dépenses
+@app.put("/trips/{trip_id}/budget", tags=["Gestion du Budget"])
+def update_trip_budget(trip_id: int, budget_data: schemas.BudgetUpdate, db: Session = Depends(get_db)):
+    """
+    Mettre à jour le montant total ou les dépenses effectuées.
+    """
+    db_budget = db.query(models.Budget).filter(models.Budget.trip_id == trip_id).first()
+    if not db_budget:
+        raise HTTPException(status_code=404, detail="Budget non trouvé.")
+    
+    # Mise à jour des champs
+    db_budget.total_amount = budget_data.total_amount
+    db_budget.spent_amount = budget_data.spent_amount
+    
+    db.commit()
+    db.refresh(db_budget)
+    return db_budget
+
+    
+    
