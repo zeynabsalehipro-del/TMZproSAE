@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:15
+    container_name: travel_db_container
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: travel_db
+    ports:
+      - "5432:5432"
+
+  api:
+    build: .
+    container_name: trip_planner_api
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://user:password@db/travel_db
+    depends_on:
+      - db
