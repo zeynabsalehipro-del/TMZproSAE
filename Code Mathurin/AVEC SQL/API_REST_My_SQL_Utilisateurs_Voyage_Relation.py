@@ -1,5 +1,7 @@
+#N'a pas été testé pour transformer plus vite en version PostgreSql
+#Il y a des erreurs notamment au niveau des if "email" in infos et autres. PAr exemple pour ces derniers il faut mettre not devant
 from flask import Flask, jsonify, request
-from db import get_connection
+from db_MySQL import get_connection
 from datetime import date
 import calendar
 import re
@@ -50,12 +52,26 @@ def verifier_email(email):
     else :
         if re.search(r".+@.+\..+", email) is None:
             return "L'email doit être de la forme x@y.z!"
+    return "OK"
 
 def verifier_existence_email(email):
     conn=get_connection()
     cursor = conn.cursor()
     query="SELECT * FROM utilisateurs WHERE email=%s"
     cursor.execute(query,email)
+    result=cursor.fetchall()
+    cursor.close()
+    conn.close()
+    if not result:
+        return False
+    else:
+        return True
+
+def verifier_existence_id(table, variable, id):
+    conn=get_connection()
+    cursor = conn.cursor()
+    query=f"SELECT * FROM {table} WHERE {variable}=%s"
+    cursor.execute(query,id)
     result=cursor.fetchall()
     cursor.close()
     conn.close()
@@ -204,6 +220,32 @@ def post_voyage():
     return jsonify(result),201
     #Le code 201 pour dire création réussie
 
+@app.route('/relations', methods=['POST'])
+def post_relation():
+    infos=request.get_json()
+    if "utilisateur" in infos and "voyage_id" in infos:
+        return jsonify({"message":"Le json doit contenir l'email du participant et l'id du voyage!"}),404
+    verif=verifier_existence_id("utilisateurs", "utilisateur_id", infos['utilisateur_id'])
+    if verif==False: #Donc que l'email n'existe pas
+        return jsonify({"message":"Cet utilisateur n'existe pas!"}),404
+    verif=verifier_existence_id("voyages", "voyage_id", infos['voyage_id'])
+    if verif==False: #Donc que le voyage n'existe pas
+        return jsonify({"message":"Ce voyage n'existe pas!"}),404
+    #Pas besoin de plus de vérification. Comme les emails et les ids doivent être préexistants ca veut dire qu'ils ont passé les checks.
+    conn=get_connection()
+    cursor = conn.cursor()
+    query="INSERT INTO relation_utilisateur_voyage (utilisateur_id, voyage_id) VALUES (%s,%s)"
+    cursor.execute(query, (infos['utilisateur_id'], infos['voyage_id']))
+    conn.commit()
+    query="SELECT * FROM relation_utilisateur_voyage WHERE utilisateur_id=%s AND voyage_id=%s"
+    cursor.execute(query,(infos['utilisateur_id'], infos['voyage_id']))
+    result=cursor.fetchall()
+    print(result)
+    cursor.close()
+    conn.close()
+    return jsonify(result),201
+    #Le code 201 pour dire création réussie
+
 #Partie Get
 @app.route('/utilisateurs', methods=['GET'])
 #Méthode HTTP GET qui permet de retourner la liste des utilisateurs
@@ -277,7 +319,7 @@ def get_voyages():
 def get_date_by_voyage_id(voyage_id):
     result=select_from_arg("date", "voyages", "voyage_id", voyage_id)
     if len(result)==0:
-        return jsonify({"erreur":"le voyage n'existe pas !"}),404
+        return jsonify({"erreur":"Le voyage n'existe pas !"}),404
     else :
         return jsonify(result),200
 
@@ -285,7 +327,7 @@ def get_date_by_voyage_id(voyage_id):
 def get_lieu_by_voyage_id(voyage_id):
     result=select_from_arg("lieu", "voyages", "voyage_id", voyage_id)
     if len(result)==0:
-        return jsonify({"erreur":"le voyage n'existe pas !"}),404
+        return jsonify({"erreur":"Le voyage n'existe pas !"}),404
     else :
         return jsonify(result),200
 
@@ -293,7 +335,7 @@ def get_lieu_by_voyage_id(voyage_id):
 def get_voyage_fini_by_voyage_id(voyage_id):
     result=select_from_arg("voyage_fini", "voyages", "voyage_id", voyage_id)
     if len(result)==0:
-        return jsonify({"erreur":"le voyage n'existe pas !"}),404
+        return jsonify({"erreur":"Le voyage n'existe pas !"}),404
     else :
         return jsonify(result),200
 
@@ -301,17 +343,81 @@ def get_voyage_fini_by_voyage_id(voyage_id):
 def get_prix_by_voyage_id(voyage_id):
     result=select_from_arg("prix", "voyages", "voyage_id", voyage_id)
     if len(result)==0:
-        return jsonify({"erreur":"le voyage n'existe pas !"}),404
+        return jsonify({"erreur":"Le voyage n'existe pas !"}),404
     else :
         return jsonify(result),200
 
 @app.route('/voyages/all/<int:voyage_id>', methods=['GET'])
-def get_all_by_voyage_id(voyage_id):
+def get_all_voyages_by_voyage_id(voyage_id):
     result=select_from_arg("*", "voyages", "voyage_id", voyage_id)
     if len(result)==0:
-        return jsonify({"erreur":"le voyage n'existe pas !"}),404
+        return jsonify({"erreur":"Le voyage n'existe pas !"}),404
     else :
         return jsonify(result),200
+
+@app.route('/relations', methods=['GET'])
+def get_relations():
+    conn=get_connection()
+    cursor = conn.cursor()
+    query="SELECT * FROM relation_utilisateur_voyage"
+    cursor.execute(query)
+    result=cursor.fetchall()
+    print(result)
+    cursor.close()
+    conn.close()
+    return jsonify(result),200
+
+@app.route('/relations/voyage_id/<int:utilisateur_id>', methods=['GET'])
+#Vous donnez l'id de l'utilisateur ca sort les id de tous les voyages qu'il a fait
+def get_voyage_id_by_email(utilisateur_id):
+    result=select_from_arg("voyage_id", "relation_utilisateur_voyage", "utilisateur_id", utilisateur_id)
+    if len(result)==0:
+        return jsonify({"erreur":"La relation n'existe pas !"}),404
+    else :
+        return jsonify(result),200
+
+@app.route('/relations/int:utilisateur_id/<int:voyage_id>', methods=['GET'])
+def get_email_by_voyage_id(voyage_id):
+    result=select_from_arg("int:utilisateur_id", "relation_utilisateur_voyage", "voyage_id", voyage_id)
+    if len(result)==0:
+        return jsonify({"erreur":"La relation n'existe pas !"}),404
+    else :
+        return jsonify(result),200
+
+@app.route('/relations/all/utilisateur_id/<int:utilisateur_id>', methods=['GET'])
+def get_all_by_utilisateur_id(utilisateur_id):
+    result=select_from_arg("*", "relation_utilisateur_voyage", "utilisateur_id", utilisateur_id)
+    if len(result)==0:
+        return jsonify({"erreur":"L'email n'est dans pas dans la table!"}),404
+    else :
+        return jsonify(result),200
+
+@app.route('/relations/all/voyage_id/<int:voyage_id>', methods=['GET'])
+def get_all_relations_by_voyage_id(voyage_id):
+    result=select_from_arg("*", "relation_utilisateur_voyage", "voyage_id", voyage_id)
+    if len(result)==0:
+        return jsonify({"erreur":"L'id n'est dans pas dans la table!"}),404
+    else :
+        return jsonify(result),200
+
+@app.route('/relations/one_line', methods=['GET'])
+def get_one_line_relations():
+    infos=request.get_json()
+    if "utilisateur_id" in infos and "voyage_id" in infos:
+        conn=get_connection()
+        cursor = conn.cursor()
+        query="SELECT * FROM relation_utilisateur_voyage WHERE utilisateur_id=%s AND voyage_id=%s"
+        cursor.execute(query,(infos['utilisateur_id'],infos['voyage_id']))
+        result=cursor.fetchall()
+        print(result)
+        cursor.close()
+        conn.close()
+        if len(result)==0:
+            return jsonify({"erreur":"Cette relation n'existe pas!"}),404
+        else :
+            return jsonify(result),200
+    else:
+        return jsonify({"erreur":"Il faut donner 2 arguments : utilisateur_id et voyage_id!"}),404
 
 #Partie Patch
 @app.route('/utilisateurs/email/<string:email>', methods=['PATCH'])
@@ -510,6 +616,26 @@ def delete_voyage(voyage_id):
     delete_from_arg("voyages", "voyage_id", voyage_id)
     return get_voyages()
 
+@app.route('/relations', methods=['DELETE'])
+def delete_relations():
+    infos=request.get_json()
+    if not ("utilisateur_id" in infos and "voyage_id" in infos):
+        return jsonify({"erreur":"Il faut donner 2 arguments : utilisateur_id et voyage_id!"}),404
+    else:
+        verif=verifier_existence_id("relation_utilisateur_voyage", "utilisateur_id", infos['utilisateur_id'])
+        if verif==False: #Donc que le voyage n'existe pas
+            return jsonify({"message":"Cette relation n'existe pas!"}),404
+        verif=verifier_existence_id("relation_utilisateur_voyage", "voyage_id", infos['voyage_id'])
+        if verif==False: #Donc que le voyage n'existe pas
+            return jsonify({"message":"Cette relation n'existe pas!"}),404
+        conn=get_connection()
+        cursor = conn.cursor()
+        query=f"DELETE FROM relation_utilisateur_voyage WHERE utilisateur_id=%s AND voyage_id=%s"
+        cursor.execute(query,(infos['utilisateur_id'],infos['voyage_id']))
+        cursor.close()
+        conn.close()
+        return get_relations()
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
 
@@ -527,3 +653,7 @@ if __name__ == "__main__":
 #Un a date (date doit être conforme (jour entre 0 et 31 ou 30 ou 29 ou 28 et mois entre 1 et 12)
 #Un a voyage_fini (doit être un boolean)
 #Un a lieu (doit être un string et ne pas être vide)
+#Quand on fait un get l'email ou le voyage id doivent exister
+#Quand on fait un POST, un Patch ou un Put sur les utilisateurs il faut que le nouvel email ne soit pas pré-existants
+
+#Pas besoin de méthode Put ou Patch pour relation, ca ne sert a rien. Les id ne sont modifiables.
