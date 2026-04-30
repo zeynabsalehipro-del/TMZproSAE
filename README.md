@@ -34,7 +34,7 @@ Nous devons implémenter au moins les trois types de relations suivants dans not
 
 ---
 
-## 4. ### 🚀 Guide d'Exécution avec Docker
+## 4. Guide d'Exécution avec Docker🚀
 Cette application est entièrement conteneurisée. Pour la lancer, vous n'avez pas besoin d'installer Python ou PostgreSQL sur votre machine, seulement **Docker** et **Docker Compose**.
 
 #### 1. Prérequis
@@ -46,7 +46,7 @@ Depuis la racine du projet (là où se trouve le fichier `docker-compose.yml`), 
 ```bash
 docker-compose up --build
 
-#### 3. Accès à la Documentation Interactive (Swagger)
+## 5. Accès à la Documentation Interactive (Swagger)
 
 *   **Swagger UI** : Accédez à [http://localhost:8000/docs](http://localhost:8000/docs)
 *   **Redoc** : Accédez à [http://localhost:8000/redoc](http://localhost:8000/redoc)
