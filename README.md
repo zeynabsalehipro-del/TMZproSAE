@@ -45,10 +45,10 @@ Cette application est entièrement conteneurisée. Pour la lancer, vous n'avez p
 Depuis la racine du projet (là où se trouve le fichier `docker-compose.yml`), exécutez la commande suivante dans votre terminal:
 ```bash
 docker-compose up --build
-
+```
 
 ---
-#### 5. Accès à la Documentation Interactive (Swagger)
+## 5. Accès à la Documentation Interactive (Swagger)
 
 *   **Swagger UI** : Accédez à [http://localhost:8000/docs](http://localhost:8000/docs)
 *   **Redoc** : Accédez à [http://localhost:8000/redoc](http://localhost:8000/redoc)
