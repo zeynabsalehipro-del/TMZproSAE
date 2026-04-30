@@ -34,33 +34,22 @@ Nous devons implémenter au moins les trois types de relations suivants dans not
 
 ---
 
-## 4. Livrables Attendus ✅
-Pour valider l'évaluation, notre dépôt GitHub doit contenir :
+## 4. ### 🚀 Guide d'Exécution avec Docker
+Cette application est entièrement conteneurisée. Pour la lancer, vous n'avez pas besoin d'installer Python ou PostgreSQL sur votre machine, seulement **Docker** et **Docker Compose**.
 
-- [x] **Code Source** : L'intégralité du backend Python.
-- [x] **Docker** : Un fichier docker-compose.yml fonctionnel pour lancer l'API et la DB simultanément.
-- [x] **Données** : Un script SQL pour importer un jeu de données de test minimal.
-- [x] **Documentation** : Un fichier README.md expliquant le contexte, l'architecture et les routes de l'API.
-- [x] **Docker Hub** : Une image Docker de notre API publiée sur Docker Hub.
+#### 1. Prérequis
+*   Docker installé sur votre machine.
+*   Docker Compose.
 
----
+#### 2. Lancement de l'application
+Depuis la racine du projet (là où se trouve le fichier `docker-compose.yml`), exécutez la commande suivante dans votre terminal:
+```bash
+docker-compose up --build
 
-## 5. Répartition des Tâches 👥
+#### 3. Accès à la Documentation Interactive (Swagger)
 
-### 👤 Membre A : Gestion des Utilisateurs & Infrastructure de Base
-* **Backend** : Création de l'API pour l'inscription et la connexion (Auth).
-* **Base de données** : Modélisation de la relation Many-to-Many (Utilisateurs <-> Voyages).
-* **Docker** : Configuration initiale du Dockerfile et de la base de données PostgreSQL.
-
-### 👤 Membre B : Gestion des Voyages & Destinations
-* **Backend** : Création des routes pour créer un voyage et ajouter des étapes.
-* **Base de données** : Modélisation de la relation One-to-Many (Voyage -> Destinations).
-* **DevOps** : Publication de l'image sur Docker Hub et gestion des Volumes pour les données.
-
-### 👤 Membre C : Gestion du Budget & Qualité
-* **Backend** : Création de l'API pour le suivi des dépenses du voyage.
-* **Base de données** : Modélisation de la relation One-to-One (Voyage -> Budget).
-* **Documentation & Tests :** : Configuration de Swagger, rédaction du README.md final et préparation de la soutenance.
+*   **Swagger UI** : Accédez à [http://localhost:8000/docs](http://localhost:8000/docs)
+*   **Redoc** : Accédez à [http://localhost:8000/redoc](http://localhost:8000/redoc)
 
 ---
 
