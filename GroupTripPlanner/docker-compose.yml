@@ -28,7 +28,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    volumes:
-      - ./app:/code/app
-
+  
+volumes:
+  tmzprosae_data:
 
