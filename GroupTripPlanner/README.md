@@ -54,7 +54,7 @@ docker-compose up --build
 *   **Redoc** : Accédez à [http://localhost:8080/redoc](http://localhost:8080/redoc)
 
 
-# 6. Architecture du Projet 🏗️
+## 6. Architecture du Projet 🏗️
 ```text
 .
 ├── app/
@@ -119,4 +119,9 @@ POST /voyages/1/destinations/
     "voyage_id": 1
 }
 ```
+## 8. Publication Docker Hub 🐳
 
+- **Lien vers l'image :** [https://hub.docker.com/r/ztmprosae/group-trip-planner](https://hub.docker.com/r/ztmprosae/group-trip-planner)
+- **Commande pour récupérer l'image :**
+  ```bash
+  docker pull ztmprosae/group-trip-planner:latest
