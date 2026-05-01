@@ -46,7 +46,6 @@ Depuis la racine du projet (là où se trouve le fichier `docker-compose.yml`), 
 ```bash
 docker-compose up --build
 ```
-<<<<<<< HEAD
 
 ---
 ## 5. Accès à la Documentation Interactive (Swagger)
