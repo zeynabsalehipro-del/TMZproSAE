@@ -50,7 +50,7 @@ docker-compose up --build
 ---
 ## 5. Accès à la Documentation Interactive (Swagger)
 
-*   **Swagger UI** : Accédez à [http://localhost:8000/docs](http://localhost:8000/docs)
-*   **Redoc** : Accédez à [http://localhost:8000/redoc](http://localhost:8000/redoc)
+*   **Swagger UI** : Accédez à [http://localhost:8080/docs](http://localhost:8080/docs)
+*   **Redoc** : Accédez à [http://localhost:8080/redoc](http://localhost:8080/redoc)
 
 
