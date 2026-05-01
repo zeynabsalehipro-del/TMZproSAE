@@ -54,52 +54,33 @@ docker-compose up --build
 *   **Redoc** : Accédez à [http://localhost:8080/redoc](http://localhost:8080/redoc)
 
 
-# Partie B — Gestion des Destinations
-**Auteur : Teodora — Membre B**
-Projet SAE — Université Sorbonne Paris Nord
+## 6. Architecture du Projet 🏗️
+```text
+.
+├── app/
+│   ├── crud.py            # Logique pour les opérations CRUD
+│   ├── database.py        # Configuration et session de la base de données
+│   ├── main.py            # Point d'entrée de l'application FastAPI
+│   ├── models.py          # Définition des modèles ORM (SQLAlchemy)
+│   ├── routes_b.py        # Définition des points de terminaison (endpoints) API
+│   ├── schemas.py         # Modèles Pydantic pour la validation des données
+│   └── verification.py    # Utilitaires de vérification/sécurité
+├── Dockerfile             # Fichier de configuration pour l'image Docker de l'API
+├── docker-compose.yml     # Orchestration de l'API et de la base de données PostgreSQL
+├── init.sql               # Script SQL pour initialiser la base de données
+├── requirements.txt       # Liste des dépendances Python (FastAPI, SQLAlchemy, etc.)
+├── .gitignore             # Fichiers à exclure du suivi Git
+└── README.md              # Documentation du projet
+```
+---
 
 ---
 
-## Responsabilités
+## 7. Documentation de l'API 🚀
 
-- **Backend** : Création des routes pour ajouter des étapes à un voyage
-- **Base de données** : Modélisation de la relation One-to-Many (Voyage → Destinations)
-- **DevOps** : Gestion des volumes Docker pour la persistance des données
+L'API fournit plusieurs points de terminaison (endpoints) pour gérer les voyages et les destinations. Nous avons respecté les standards REST (GET, POST, PUT, DELETE) pour assurer une interaction fluide avec les données.
 
----
-
-## Fichiers
-
-```
-app/
-├── models_b.py    → Modèle SQLAlchemy : table 'destinations'
-├── schemas_b.py   → Schémas Pydantic  : validation et réponses API
-├── crud_b.py      → Fonctions CRUD    : accès base de données
-└── routes_b.py    → Routes FastAPI    : router à inclure dans main.py
-```
-
----
-
-## Relation implémentée : One-to-Many
-
-```
-voyages (Mathurin — Membre A)       destinations (Teodora — Membre B)
-─────────────────────────────       ──────────────────────────────────
-voyage_id  PK                  ←──  voyage_id  FK  (ON DELETE CASCADE)
-date                                destination_id  PK
-lieu                                nom             (obligatoire)
-voyage_fini                         localisation    (optionnel)
-prix                                categorie       hotel | activite | restaurant
-                                    notes           (optionnel)
-                                    ordre           position dans l'itinéraire
-```
-
-**Un voyage contient plusieurs destinations.**
-Si un voyage est supprimé, toutes ses destinations sont supprimées automatiquement (CASCADE).
-
----
-
-## Routes exposées
+### Routes exposées
 
 | Méthode  | URL                                   | Description                     | Code succès |
 |----------|---------------------------------------|---------------------------------|-------------|
@@ -111,53 +92,10 @@ Si un voyage est supprimé, toutes ses destinations sont supprimées automatique
 
 ---
 
-## Validations (schemas_b.py)
-
-- `nom` : obligatoire, ne peut pas être vide
-- `categorie` : doit être `hotel`, `activite` ou `restaurant` (ou null)
-- `ordre` : doit être >= 1 (ou null)
-- Requête sur `voyage_id` inexistant → **404**
-- Données invalides → **422 Validation Error**
-
----
-
-## Intégration dans le projet commun
-
-### 1. Ajouter le modèle dans `models.py`
-
-```python
-from .models_b import Destination  # ← ajouter avant create_all()
-```
-
-### 2. Ajouter les routes dans `main.py`
-
-```python
-from app.routes_b import router as router_destinations  # ← ajouter
-app.include_router(router_destinations)                 # ← ajouter
-```
-
-### 3. Ajouter la table dans le script SQL commun
-
-Ajouter après la création de la table `voyages` :
-
-```sql
-CREATE TABLE IF NOT EXISTS destinations (
-    destination_id  SERIAL PRIMARY KEY,
-    nom             VARCHAR(100)  NOT NULL,
-    localisation    VARCHAR(100),
-    categorie       VARCHAR(50)   CHECK (categorie IN ('hotel', 'activite', 'restaurant')),
-    notes           VARCHAR(255),
-    ordre           INTEGER       CHECK (ordre >= 1),
-    voyage_id       INTEGER       NOT NULL,
-    FOREIGN KEY (voyage_id) REFERENCES voyages(voyage_id) ON DELETE CASCADE
-);
-```
-
----
-
 ## Exemple d'utilisation
 
 **Créer une destination :**
+
 ```json
 POST /voyages/1/destinations/
 {
@@ -181,12 +119,9 @@ POST /voyages/1/destinations/
     "voyage_id": 1
 }
 ```
+## 8. Publication Docker Hub 🐳
 
-**Mise à jour partielle :**
-```json
-PUT /destinations/1
-{
-    "notes": "Billet gratuit le premier dimanche du mois."
-}
-```
-Seul le champ `notes` est modifié. Les autres restent inchangés.
+- **Lien vers l'image :** [https://hub.docker.com/r/ztmprosae/group-trip-planner](https://hub.docker.com/r/ztmprosae/group-trip-planner)
+- **Commande pour récupérer l'image :**
+  ```bash
+  docker pull ztmprosae/group-trip-planner:latest
