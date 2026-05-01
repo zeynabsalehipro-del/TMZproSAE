@@ -19,7 +19,7 @@ services:
       retries: 10
 
   api:
-    build: .
+    image: ztmprosae/group-trip-planner:latest
     container_name: tmzprosae_api
     ports:
       - "8080:8000"
@@ -31,5 +31,4 @@ services:
     volumes:
       - ./app:/code/app
 
-volumes:
-  tmzprosae_data:
+
