@@ -19,17 +19,10 @@ L'idée est d'offrir une interface unique où chaque membre du groupe peut consu
 Notre stack technique respecte les contraintes imposées par le sujet :
 
 * **Backend** : Python avec le framework FastAPI.
+* **Frontend** : HTML5, CSS3 et JavaScript vanilla (ES6+) — sans framework, sans build step.
 * **Base de données** : PostgreSQL (Base de données relationnelle).
 * **ORM** : SQLAlchemy (obligatoire pour la persistance des données).
-* **Frontend** : HTML5, CSS3 et JavaScript vanilla (ES6+) — sans framework, sans build step.
 * **Infrastructure** : Conteneurisation totale via Docker et orchestration via Docker Compose.
-
-### Front-end : technologies utilisées
-* **HTML5 sémantique** (`<aside>`, `<main>`, `<section>`, `<nav>`)
-* **CSS3 moderne** : variables CSS, Grid, Flexbox, `@keyframes`, `backdrop-filter`, `@media` queries
-* **JavaScript ES6+ vanilla** : Fetch API, async/await, localStorage, DOM API, `Intl.NumberFormat`
-* **Google Fonts** : Fraunces (display serif), Inter (body sans-serif), JetBrains Mono (monospace)
-* **Aucune dépendance npm**, aucun bundler, aucun framework — un seul `index.html`, un seul `styles.css`, un seul `app.js`
 
 ---
 
@@ -196,45 +189,7 @@ POST /voyages/1/destinations/
 
 ---
 
-## 9. Front-end 🎨
-
-L'interface web est servie directement par FastAPI grâce à `StaticFiles`, et elle communique avec l'API via la même origine (pas besoin de configurer une URL externe).
-
-### Sections de la console
-1. **Tableau de bord** — statistiques globales et derniers voyages enregistrés
-2. **Utilisateurs** — création, édition champ par champ, suppression
-3. **Voyages** — CRUD complet, bascule de statut "terminé/à venir" en un clic
-4. **Destinations** — gestion des étapes par voyage avec catégories (hôtel/activité/restaurant)
-5. **Budget** — barre de progression visuelle avec alerte de dépassement
-6. **Relations** — liaison utilisateur ↔ voyage avec sélecteurs croisés
-
-### Fonctionnalités techniques
-* **Détection automatique de l'API** : `location.origin` par défaut, modifiable via la sidebar
-* **Health-check live** : ping de `/api` toutes les 30 secondes, indicateur vert/rouge
-* **Toasts d'erreur** : affichage des messages `detail` retournés par FastAPI (validation Pydantic incluse)
-* **Persistance utilisateur** : l'URL de l'API est sauvegardée dans `localStorage`
-* **Responsive** : adaptation mobile sous 900px et 700px
-
----
-
-## 10. Modifications clés pour la connexion front ↔ back 🔌
-
-Trois modifications ont été nécessaires pour faire fonctionner le front-end et le back-end ensemble dans un seul container :
-
-### `app/main.py`
-* Ajout de `CORSMiddleware` pour autoriser les appels JavaScript du navigateur
-* Ajout de `StaticFiles` mount sur `/` pour servir le dossier `frontend/`
-* Déplacement de la route `GET /` vers `GET /api` (pour ne pas entrer en conflit avec le mount)
-
-### `Dockerfile`
-* Ajout de `COPY ./frontend /code/frontend` pour embarquer l'interface web dans l'image
-
-### `docker-compose.yml`
-* Remplacement de `image: ztmprosae/group-trip-planner:latest` par `build: .` pour rebuilder localement avec les modifications
-
----
-
-## 11. Publication Docker Hub 🐳
+## 9. Publication Docker Hub 🐳
 
 * **Lien vers l'image :** [https://hub.docker.com/r/ztmprosae/group-trip-planner](https://hub.docker.com/r/ztmprosae/group-trip-planner)
 * **Récupérer l'image :**
@@ -249,9 +204,3 @@ Trois modifications ont été nécessaires pour faire fonctionner le front-end e
   ```
 
 ---
-
-## 12. Membres de l'équipe 👥
-
-* **Mathurin**
-* **Teodora**
-* **Zeynab**
