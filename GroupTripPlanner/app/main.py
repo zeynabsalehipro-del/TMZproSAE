@@ -10,6 +10,8 @@
 
 from datetime import date as date_type
 from fastapi import FastAPI, Depends, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from typing import List
@@ -33,6 +35,17 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# ----------------------------------------------------------
+# Configuration CORS — autorise les appels du front-end
+# ----------------------------------------------------------
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 # ----------------------------------------------------------
 # Dépendance de session base de données
@@ -49,7 +62,7 @@ def get_db():
 # ROUTE RACINE
 # =============================================================
 
-@app.get("/", tags=["Général"])
+@app.get("/api", tags=["Général"])
 def home():
     return {
         "message": "Bienvenue dans l'API Group Trip Planner!",
@@ -454,3 +467,13 @@ def update_trip_budget(trip_id: int, budget_data: schemas.BudgetUpdate, db: Sess
     db.commit()
     db.refresh(db_budget)
     return db_budget
+
+
+# =============================================================
+# Servir le front-end (doit être DÉCLARÉ APRÈS toutes les routes)
+# Le dossier /code/frontend est copié dans l'image Docker.
+# =============================================================
+import os
+FRONTEND_DIR = "/code/frontend"
+if os.path.isdir(FRONTEND_DIR):
+    app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")
