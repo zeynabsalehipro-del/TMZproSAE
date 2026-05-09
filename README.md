@@ -204,3 +204,6 @@ POST /voyages/1/destinations/
   ```
 
 ---
+## 10. Démonstration de l'application 📺
+Vous pouvez trouver une vidéo explicative du fonctionnement de l'application ainsi que les datasets via le lien suivant :
+<video src="(https://streamable.com/nxnk23)" width="100%" controls></video>
