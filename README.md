@@ -207,3 +207,5 @@ POST /voyages/1/destinations/
 ## 10. Démonstration de l'application 📺
 Vous pouvez trouver une vidéo explicative du fonctionnement de l'application ainsi que les datasets via le lien suivant :
 [![Regarder la vidéo](https://img.shields.io/badge/🎥_Voir_la_Démonstration-Cliquez_Ici-blue?style=for-the-badge)](https://streamable.com/nxnk23)
+
+[![CI](https://github.com/zeynabsalehipro-del/TMZproSAE/actions/workflows/ci.yml/badge.svg)](https://github.com/zeynabsalehipro-del/TMZproSAE/actions/workflows/ci.yml)
