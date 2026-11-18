@@ -3,7 +3,7 @@
 Ce projet est réalisé dans le cadre de la **SAE - Développement & Déploiement d'une Application Web RESTful Conteneurisée**.
 
 ---
-<img width="551" height="431" alt="image" src="https://github.com/user-attachments/assets/0eabe83f-f216-46fd-a65b-bc612d755bde" />
+[![CI](https://github.com/zeynabsalehipro-del/TMZproSAE/actions/workflows/ci.yml/badge.svg)](https://github.com/zeynabsalehipro-del/TMZproSAE/actions/workflows/ci.yml)
 
 ## 1. Objectif Général et Contexte 🌍
 Notre application, Group Trip Planner, est une plateforme collaborative conçue pour simplifier l'organisation de voyages à plusieurs. Trop souvent, planifier un voyage en groupe devient complexe à cause de la dispersion des informations. Cette solution permet donc de :
